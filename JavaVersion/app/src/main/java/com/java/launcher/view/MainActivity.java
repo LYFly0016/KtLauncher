@@ -14,37 +14,49 @@ import com.java.launcher.viewmodel.MainViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MainActivity 是应用程序的主活动，用于显示应用程序的页面。
+ * 它使用 ViewPager2 来展示应用程序图标，并通过 ViewModel 管理数据。
+ */
 public class MainActivity extends AppCompatActivity {
 
-    private ViewPager2 viewPager; // 用于显示应用页面的ViewPager2
-    private AppViewPagerAdapter appViewPagerAdapter; // ViewPager的适配器
-    private MainViewModel appViewModel; // 视图模型
+    private ViewPager2 viewPager; // 用于显示应用程序页面的 ViewPager2 组件
+    private AppViewPagerAdapter appViewPagerAdapter; // ViewPager2 的适配器
+    private MainViewModel appViewModel; // 视图模型，用于管理和提供应用程序数据
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); // 设置活动的布局文件
 
         // 初始化视图组件
-        viewPager = findViewById(R.id.viewPager);
-        appViewPagerAdapter = new AppViewPagerAdapter(this, new ArrayList<>());
-        viewPager.setAdapter(appViewPagerAdapter);
+        viewPager = findViewById(R.id.viewPager); // 获取布局文件中的 ViewPager2 组件
+        appViewPagerAdapter = new AppViewPagerAdapter(this, new ArrayList<>()); // 创建 AppViewPagerAdapter 实例
+        viewPager.setAdapter(appViewPagerAdapter); // 设置 ViewPager2 的适配器
 
-        // 获取MainViewModel实例，并设置观察者
-        appViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        appViewModel.getAppsLiveData().observe(this, this::setupPages);
+        // 获取 MainViewModel 实例，并设置观察者以更新页面内容
+        appViewModel = new ViewModelProvider(this).get(MainViewModel.class); // 获取 MainViewModel 实例
+        appViewModel.getAppsLiveData().observe(this, this::setupPages); // 观察 LiveData，当数据发生变化时调用 setupPages 方法
     }
 
-    // 设置页面内容
+    /**
+     * 根据应用程序数据设置页面内容。
+     *
+     * @param appModels 包含应用程序数据的列表
+     */
     private void setupPages(List<AppModel> appModels) {
-        int appsPerPage = 28; // 每页显示的应用数量
-        ArrayList<ArrayList<AppModel>> pages = new ArrayList<>();
+        int appsPerPage = 28; // 每页显示的应用程序数量
+        ArrayList<ArrayList<AppModel>> pages = new ArrayList<>(); // 用于存储每页的应用程序列表
+
+        // 将应用程序列表划分为若干页，每页包含 appsPerPage 个应用程序
         for (int i = 0; i < appModels.size(); i += appsPerPage) {
-            int end = Math.min(i + appsPerPage, appModels.size());
-            ArrayList<AppModel> page = new ArrayList<>(appModels.subList(i, end));
-            pages.add(page); // 将每页的应用列表添加到pages中
+            int end = Math.min(i + appsPerPage, appModels.size()); // 确定当前页的结束索引
+            ArrayList<AppModel> page = new ArrayList<>(appModels.subList(i, end)); // 获取当前页的应用程序列表
+            pages.add(page); // 将当前页的应用程序列表添加到 pages 中
         }
-        appViewPagerAdapter.setPages(pages); // 设置适配器的页面
-        appViewPagerAdapter.notifyDataSetChanged(); // 通知适配器数据已改变
+
+        // 设置适配器的页面数据，并通知适配器数据已改变
+        appViewPagerAdapter.setPages(pages); // 设置适配器的页面数据
+        appViewPagerAdapter.notifyDataSetChanged(); // 通知适配器数据已改变，刷新页面
     }
 }
