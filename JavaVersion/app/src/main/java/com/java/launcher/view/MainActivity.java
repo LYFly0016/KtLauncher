@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
      * @param appModels 包含应用程序数据的列表
      */
     private void setupPages(List<AppModel> appModels) {
-        int appsPerPage = 28; // 每页显示的应用程序数量
+        int appsPerPage = 20; // 每页显示的应用程序数量
         ArrayList<ArrayList<AppModel>> pages = new ArrayList<>(); // 用于存储每页的应用程序列表
 
         // 将应用程序列表划分为若干页，每页包含 appsPerPage 个应用程序

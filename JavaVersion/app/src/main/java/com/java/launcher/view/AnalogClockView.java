@@ -163,8 +163,8 @@ public class AnalogClockView extends View {
         canvas.scale(scaleFactor, scaleFactor, centerX, centerY); // 缩放画布
 
         // 计算背景图的目标宽高
-        int bgWidth = (int) (radius * 2); // 背景图宽度
-        int bgHeight = (int) (radius * 2); // 背景图高度
+        int bgWidth = (int) (radius * 2.25); // 背景图宽度
+        int bgHeight = (int) (radius * 2.25); // 背景图高度
 
         // 创建一个缩放后的背景图
         Bitmap scaledBackgroundBitmap = Bitmap.createScaledBitmap(clockBackgroundBitmap, bgWidth, bgHeight, true);
@@ -176,8 +176,9 @@ public class AnalogClockView extends View {
         // 绘制背景图，保持圆形
         canvas.drawBitmap(scaledBackgroundBitmap, left, top, null);
 
+
         // 绘制时钟表盘圆圈
-        canvas.drawCircle(centerX, centerY, radius, paintCircle);
+//        canvas.drawCircle(centerX, centerY, radius, paintCircle);
 
         // 绘制刻度线
         drawTicks(canvas);
@@ -289,7 +290,7 @@ public class AnalogClockView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (event.getPointerCount() == 2) {
+                if (event.getPointerCount() == 2) { //双指触控
                     scaleStartDistance = getDistance(event);
                 }
                 break;
