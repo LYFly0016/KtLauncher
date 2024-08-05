@@ -75,11 +75,13 @@ public class DragItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
                           @NonNull RecyclerView.ViewHolder target) {
         appAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+        Log.d("JOKER", "onMove: ");
         if (viewHolder instanceof AppViewHolder) {
             ((AppViewHolder) viewHolder).cancelDialog(); // 取消任何显示的弹窗
         }
         return true;
     }
+
 
     /**
      * 当项目被滑动时调用（不处理滑动操作）。
