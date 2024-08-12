@@ -1,0 +1,12 @@
+<!-- res/drawable/clock_background.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background layer with your clock image -->
+    <item>
+        <bitmap
+            android:src="@mipmap/clock_bg_round"
+            android:gravity="center" />
+    </item>
+
+    <!-- Optional: Add more layers if needed, like shadows or additional graphics -->
+</layer-list>

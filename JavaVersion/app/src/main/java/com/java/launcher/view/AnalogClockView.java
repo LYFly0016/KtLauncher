@@ -71,7 +71,7 @@ public class AnalogClockView extends View {
 //        Drawable hourHandDrawable = context.getDrawable(R.drawable.hour_hand);
 //        Drawable minuteHandDrawable = context.getDrawable(R.drawable.minute_hand);
 //        Drawable secondHandDrawable = context.getDrawable(R.drawable.second_hand);
-        Drawable clockBackgroundDrawable = context.getDrawable(R.mipmap.clock_bg_round);
+        Drawable clockBackgroundDrawable = context.getDrawable(R.drawable.clock_background);
 
         // 转换 Drawable 为 Bitmap
 //        hourHandBitmap = drawableToBitmap(hourHandDrawable);

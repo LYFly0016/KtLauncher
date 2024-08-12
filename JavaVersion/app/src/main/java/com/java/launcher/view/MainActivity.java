@@ -1,6 +1,12 @@
 package com.java.launcher.view;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowInsetsController;
+import android.view.WindowManager;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -37,6 +43,24 @@ public class MainActivity extends AppCompatActivity {
         // 获取 MainViewModel 实例，并设置观察者以更新页面内容
         appViewModel = new ViewModelProvider(this).get(MainViewModel.class); // 获取 MainViewModel 实例
         appViewModel.getAppsLiveData().observe(this, this::setupPages); // 观察 LiveData，当数据发生变化时调用 setupPages 方法
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        // 设置状态栏为透明，并使内容延伸到状态栏区域
+        Window window = getWindow();
+        window.setStatusBarColor(android.graphics.Color.TRANSPARENT);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false);
+        } else {
+            window.getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            );
+        }
     }
 
     /**
