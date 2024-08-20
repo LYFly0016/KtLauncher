@@ -17,7 +17,7 @@ import java.util.List;
  * AppAdapter 是 RecyclerView 的适配器类，用于管理和显示应用列表数据。
  */
 public class AppAdapter extends RecyclerView.Adapter<AppViewHolder> {
-    private List<AppModel> apps = new ArrayList<>(); // 存储应用数据的列表
+    public List<AppModel> apps = new ArrayList<>(); // 存储应用数据的列表
     private List<AppModel> draggedItems = new ArrayList<>(); // 存储被拖动的应用数据列表
 
     /**
@@ -82,6 +82,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppViewHolder> {
         AppModel movedApp = apps.remove(fromPosition);
         apps.add(toPosition, movedApp);
         notifyItemMoved(fromPosition, toPosition); // 通知项目已移动
+    }
+
+    public void onItemRemoved(int position) {
+        // 确保位置有效
+        apps.remove(position);
+        notifyItemRemoved(position);
     }
 
     /**

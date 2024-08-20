@@ -25,7 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class WeatherView extends LinearLayout {
-        private static final String WEATHER_API_KEY = "d838adf6791f4b0ba80a7cde1b580d8c"; // 替换为你的 和风 API Key
+    private static final String WEATHER_API_KEY = "d838adf6791f4b0ba80a7cde1b580d8c"; // 替换为你的 和风 API Key
     private static final String WEATHER_API_URL = "http://guolin.tech/api/weather?cityid=CN101280601&key=";
 
 

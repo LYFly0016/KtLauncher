@@ -1,8 +1,18 @@
 package com.java.launcher.helper;
 
+import static android.view.View.DRAG_FLAG_GLOBAL;
+
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +23,7 @@ import com.java.launcher.adapter.AppViewPagerAdapter;
 import com.java.launcher.model.AppModel;
 import com.java.launcher.view.AppViewHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,7 +40,6 @@ public class DragItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private boolean isDragging = false; // 是否正在拖拽
     private Handler handler; // 处理跨页面拖拽的 Handler
     private Runnable switchPageRunnable; // 用于延迟执行页面切换的 Runnable
-    private int switchDirection = 0; // 拖拽方向，-1 表示向左，1 表示向右
 
     /**
      * 构造函数，初始化必要的参数。
@@ -60,7 +70,8 @@ public class DragItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-        return makeMovementFlags(dragFlags, 0); // 仅允许拖拽
+        int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+        return makeMovementFlags(dragFlags, swipeFlags);
     }
 
     /**
@@ -91,7 +102,8 @@ public class DragItemTouchHelperCallback extends ItemTouchHelper.Callback {
      */
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-        // 不处理滑动
+        appAdapter.onItemRemoved(viewHolder.getAdapterPosition());
+        Log.e("JOKER", "onSwiped: " + viewHolder.getAdapterPosition());
     }
 
     /**
@@ -147,45 +159,22 @@ public class DragItemTouchHelperCallback extends ItemTouchHelper.Callback {
      * @param isCurrentlyActive 是否当前活跃
      */
     @Override
-    public void onChildDraw(@NonNull android.graphics.Canvas c, @NonNull RecyclerView recyclerView,
+    public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
                             @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
                             int actionState, boolean isCurrentlyActive) {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+            int edgeWidth = recyclerView.getWidth() / 6;
+            int itemRight = viewHolder.itemView.getRight();
+            int itemLeft = viewHolder.itemView.getLeft();
 
-        if (!isDragging) return;
-
-        // 计算边界位置
-        int edgeWidth = recyclerView.getWidth() / 6; // 边缘灵敏度因子
-        int itemRight = viewHolder.itemView.getRight();
-        int itemLeft = viewHolder.itemView.getLeft();
-
-        // 检查是否拖动到边缘
-        if (itemRight > recyclerView.getWidth() - edgeWidth && currentPosition < viewPagerAdapter.getItemCount() - 1) {
-            switchDirection = 1;
-        } else if (itemLeft < edgeWidth && currentPosition > 0) {
-            switchDirection = -1;
-        } else {
-            switchDirection = 0;
-        }
-
-
-        if (switchDirection != 0) {
-            handler.removeCallbacks(switchPageRunnable);
-            switchPageRunnable = () -> {
-                // 执行页面切换
-                Log.d("JOKER", "onChildDraw: switchDirection = " + switchDirection + "--" + currentPosition);
-                Log.d("JOKER", "onChildDraw: viewPagerAdapter.getItemCount() = " + viewPagerAdapter.getItemCount());
-                switchPage(currentPosition + 1);
-                if (switchDirection == 1 && currentPosition < viewPagerAdapter.getItemCount() - 1) {
-                    switchPage(currentPosition + 1);
-                } else if (switchDirection == -1 && currentPosition > 0) {
-                    switchPage(currentPosition - 1);
-                }
-                switchDirection = 0;
-            };
-            handler.postDelayed(switchPageRunnable, 1000); // 延迟 1 秒执行页面切换
-        } else {
-            handler.removeCallbacks(switchPageRunnable); // 取消页面切换
+            if (itemRight > recyclerView.getWidth() - edgeWidth && currentPosition < pageCount - 1) {
+                handler.postDelayed(() -> switchPage(currentPosition + 1), 1000);
+            } else if (itemLeft < edgeWidth && currentPosition > 0) {
+                handler.postDelayed(() -> switchPage(currentPosition - 1), 1000);
+            } else {
+                handler.removeCallbacksAndMessages(null);
+            }
         }
     }
 
