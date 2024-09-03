@@ -63,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public ViewPager2 getViewPager() {
+        return viewPager;
+    }
+
     /**
      * 根据应用程序数据设置页面内容。
      *

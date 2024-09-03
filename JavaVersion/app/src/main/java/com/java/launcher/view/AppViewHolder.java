@@ -1,6 +1,7 @@
 package com.java.launcher.view;
 
 import android.content.Intent;
+import android.view.DragEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,14 +44,7 @@ public class AppViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        // 设置长按事件监听器，显示应用信息对话框
-        itemView.setOnLongClickListener(v -> {
-            AppModel app = (AppModel) itemView.getTag(); // 获取与视图关联的应用程序对象
-            if (app != null) {
-                showAppInfoDialog(app); // 显示应用信息对话框
-            }
-            return true; // 返回 true 表示事件已处理
-        });
+
     }
 
     /**

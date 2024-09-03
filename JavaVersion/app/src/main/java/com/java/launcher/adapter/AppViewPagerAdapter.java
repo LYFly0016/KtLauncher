@@ -70,6 +70,10 @@ public class AppViewPagerAdapter extends FragmentStateAdapter {
         notifyDataSetChanged(); // 通知数据集已更改
     }
 
+    public ArrayList<AppModel> getPage(int position) {
+        return pages.get(position);
+    }
+
     /**
      * 将拖动的应用数据从一个页面移动到另一个页面。
      *

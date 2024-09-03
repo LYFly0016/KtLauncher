@@ -1,10 +1,15 @@
 package com.java.launcher.adapter;
 
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.java.launcher.R;
 import com.java.launcher.model.AppModel;
@@ -19,6 +24,13 @@ import java.util.List;
 public class AppAdapter extends RecyclerView.Adapter<AppViewHolder> {
     public List<AppModel> apps = new ArrayList<>(); // 存储应用数据的列表
     private List<AppModel> draggedItems = new ArrayList<>(); // 存储被拖动的应用数据列表
+    private final ViewPager2 viewPager;
+    private final AppViewPagerAdapter appViewPagerAdapter;
+
+    public AppAdapter(ViewPager2 viewPager, AppViewPagerAdapter appViewPagerAdapter) {
+        this.viewPager = viewPager;
+        this.appViewPagerAdapter = appViewPagerAdapter;
+    }
 
     /**
      * 当需要创建新的 ViewHolder 时调用。
@@ -44,9 +56,71 @@ public class AppAdapter extends RecyclerView.Adapter<AppViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull AppViewHolder holder, int position) {
         // 绑定数据到 ViewHolder
+        Log.d("JOKER", "onBindViewHolder: ");
         holder.bind(apps.get(position));
+        holder.itemView.setOnLongClickListener(v -> {
+
+            View.DragShadowBuilder myShadow = new View.DragShadowBuilder(v);
+
+            // 启动拖拽
+            v.startDragAndDrop(null, myShadow, v, 0);
+            v.setVisibility(View.INVISIBLE); // 隐藏原始视图
+            return true;
+        });
+        holder.itemView.setOnDragListener((v, event) -> {
+            Log.d("JOKER", "setOnDragListener: ");
+            switch (event.getAction()) {
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    // 拖拽进入目标区域
+                    break;
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    // 检查拖拽位置，接近边缘时切换页面
+                    int width = v.getWidth();
+                    float x = event.getX();
+
+                    if (x < width * 0.1) { // 接近左边缘
+                        viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
+                    } else if (x > width * 0.9) { // 接近右边缘
+                        viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+                    }
+                    break;
+                case DragEvent.ACTION_DROP:
+                    // 当图标被放下时的操作
+                    View draggedView = (View) event.getLocalState(); // 获取拖动的View
+                    AppModel app = (AppModel) draggedView.getTag(); // 获取图标的名字（标识符）
+                    int fromPage = findPageContainingApp(app);
+
+                    // 如果目标页面和当前位置不一致，则移动图标到新位置
+                    if (fromPage != position) {
+                        appViewPagerAdapter.getPage(fromPage).remove(app); // 从原位置移除
+                        appViewPagerAdapter.getPage(position).add(app); // 添加到新位置
+                        notifyItemChanged(fromPage); // 刷新原页面
+                        notifyItemChanged(position); // 刷新目标页面
+                    }
+
+                    draggedView.setVisibility(View.VISIBLE); // 重新显示拖动的View
+                    break;
+
+                case DragEvent.ACTION_DRAG_ENDED:
+                    // 拖拽结束时恢复图标的可见性
+                    View droppedView = (View) event.getLocalState(); // 获取拖动的View
+                    droppedView.setVisibility(View.VISIBLE); // 重新显示
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        });
     }
 
+    private int findPageContainingApp(AppModel app) {
+        for (int i = 0; i < appViewPagerAdapter.getItemCount(); i++) {
+            if (appViewPagerAdapter.getPage(i).contains(app)) {
+                return i;
+            }
+        }
+        return -1;
+    }
     /**
      * 获取 RecyclerView 项目数量。
      *

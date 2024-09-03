@@ -40,6 +40,7 @@ public class DragItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private boolean isDragging = false; // 是否正在拖拽
     private Handler handler; // 处理跨页面拖拽的 Handler
     private Runnable switchPageRunnable; // 用于延迟执行页面切换的 Runnable
+    private final ViewPager2 viewPager;
 
     /**
      * 构造函数，初始化必要的参数。
@@ -51,12 +52,13 @@ public class DragItemTouchHelperCallback extends ItemTouchHelper.Callback {
      * @param pageCount         总页数
      */
     public DragItemTouchHelperCallback(AppAdapter adapter, AppViewPagerAdapter viewPagerAdapter,
-                                       RecyclerView recyclerView, int currentPosition, int pageCount) {
+                                       RecyclerView recyclerView, int currentPosition, int pageCount, ViewPager2 viewPager) {
         this.appAdapter = adapter;
         this.viewPagerAdapter = viewPagerAdapter;
         this.recyclerView = recyclerView;
         this.currentPosition = currentPosition;
         this.pageCount = pageCount;
+        this.viewPager = viewPager;
         this.handler = new Handler(Looper.getMainLooper());
     }
 
@@ -163,19 +165,19 @@ public class DragItemTouchHelperCallback extends ItemTouchHelper.Callback {
                             @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
                             int actionState, boolean isCurrentlyActive) {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-            int edgeWidth = recyclerView.getWidth() / 6;
-            int itemRight = viewHolder.itemView.getRight();
-            int itemLeft = viewHolder.itemView.getLeft();
-
-            if (itemRight > recyclerView.getWidth() - edgeWidth && currentPosition < pageCount - 1) {
-                handler.postDelayed(() -> switchPage(currentPosition + 1), 1000);
-            } else if (itemLeft < edgeWidth && currentPosition > 0) {
-                handler.postDelayed(() -> switchPage(currentPosition - 1), 1000);
-            } else {
-                handler.removeCallbacksAndMessages(null);
-            }
-        }
+//        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+//            int edgeWidth = recyclerView.getWidth() / 6;
+//            int itemRight = viewHolder.itemView.getRight();
+//            int itemLeft = viewHolder.itemView.getLeft();
+//
+//            if (itemRight > recyclerView.getWidth() - edgeWidth && currentPosition < pageCount - 1) {
+//                handler.postDelayed(() -> switchPage(currentPosition + 1), 1000);
+//            } else if (itemLeft < edgeWidth && currentPosition > 0) {
+//                handler.postDelayed(() -> switchPage(currentPosition - 1), 1000);
+//            } else {
+//                handler.removeCallbacksAndMessages(null);
+//            }
+//        }
     }
 
     /**
@@ -191,10 +193,8 @@ public class DragItemTouchHelperCallback extends ItemTouchHelper.Callback {
             appAdapter.notifyDataSetChanged();
             viewPagerAdapter.notifyDataSetChanged();
 
-            if (recyclerView.getParent() instanceof ViewPager2) {
-                Log.d("JOKER", "switchPage: enter if");
-                ((ViewPager2) recyclerView.getParent()).setCurrentItem(newPosition, true);
-            }
+            viewPager.setCurrentItem(newPosition, true);
         }
     }
+
 }
