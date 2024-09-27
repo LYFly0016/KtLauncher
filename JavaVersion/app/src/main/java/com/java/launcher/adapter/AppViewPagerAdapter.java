@@ -81,28 +81,5 @@ public class AppViewPagerAdapter extends FragmentStateAdapter {
      * @param fromPage    数据来源页面的索引
      * @param toPage      数据目标页面的索引
      */
-    public void moveItemsToPage(List<AppModel> draggedApps, int fromPage, int toPage) {
-        // 如果目标页面和来源页面相同，或者没有拖动的应用数据，直接返回
-        if (fromPage == toPage || draggedApps == null || draggedApps.isEmpty()) return;
 
-        ArrayList<AppModel> fromPageList = pages.get(fromPage);
-        ArrayList<AppModel> toPageList;
-        Log.d("JOKER", "moveItemsToPage: " + fromPage + "--" + toPage);
-        // 如果目标页面超过现有页面数量，创建一个新的页面
-        if (toPage >= pages.size()) {
-            toPageList = new ArrayList<>();
-            pages.add(toPageList);
-        } else {
-            toPageList = pages.get(toPage);
-        }
-
-        // 从来源页面移除拖动的应用数据，并添加到目标页面
-        fromPageList.removeAll(draggedApps);
-        toPageList.addAll(draggedApps);
-
-        // 如果来源页面为空且不是首页，则删除该页面
-        if (fromPageList.isEmpty() && fromPage != 0) {
-            pages.remove(fromPage);
-        }
-    }
 }

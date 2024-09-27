@@ -9,13 +9,12 @@
     import androidx.annotation.Nullable;
     import androidx.fragment.app.Fragment;
     import androidx.recyclerview.widget.GridLayoutManager;
-    import androidx.recyclerview.widget.ItemTouchHelper;
     import androidx.recyclerview.widget.RecyclerView;
 
     import com.java.launcher.R;
     import com.java.launcher.adapter.AppAdapter;
     import com.java.launcher.adapter.AppViewPagerAdapter;
-    import com.java.launcher.helper.DragItemTouchHelperCallback;
+
     import com.java.launcher.model.AppModel;
 
     import java.util.ArrayList;
@@ -71,17 +70,6 @@
             AppAdapter appAdapter = new AppAdapter(((MainActivity) getActivity()).getViewPager(), viewPagerAdapter); // 创建 AppAdapter 实例
             appAdapter.setApps(apps); // 设置应用程序列表
             recyclerView.setAdapter(appAdapter); // 设置 RecyclerView 的适配器
-
-            ItemTouchHelper.Callback callback = new DragItemTouchHelperCallback(
-                    appAdapter, // 当前页面的适配器
-                    viewPagerAdapter, // ViewPager 的适配器
-                    recyclerView, // 当前的 RecyclerView 实例
-                    currentPosition, // 当前页面的位置
-                    viewPagerAdapter.getItemCount(), // ViewPager 的页面数量
-                    ((MainActivity) getActivity()).getViewPager()
-            );
-            ItemTouchHelper touchHelper = new ItemTouchHelper(callback); // 创建 ItemTouchHelper 实例
-            touchHelper.attachToRecyclerView(recyclerView); // 将回调附加到 RecyclerView
         }
 
 
